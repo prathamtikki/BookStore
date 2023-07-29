@@ -1,10 +1,8 @@
-from fastapi import FastAPI,Depends
+from fastapi import FastAPI
 from typing import Annotated
-from sqlalchemy.orm import Session
 import models as models
-from database import engine, SessionLocal
-from models import Book,Rating
-from routes import books
+from database import engine
+from routes import books,rating
 
 
 app=FastAPI()
@@ -12,5 +10,5 @@ app=FastAPI()
 models.Base.metadata.create_all(bind=engine)
 
 app.include_router(books.router)
-
+app.include_router(rating.router)
 print(90)
