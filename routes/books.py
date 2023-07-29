@@ -1,10 +1,10 @@
 from fastapi import Depends,APIRouter,HTTPException
 from typing import Annotated
-from sqlalchemy.orm import Session
 from models import Book,Rating
-from database import engine, SessionLocal
+from database import SessionLocal
 from pydantic import BaseModel
 from starlette import status
+
 
 router=APIRouter(prefix='/books',tags=['books'])
 
@@ -53,10 +53,11 @@ async def get_book(db:db_dependancy,book_id:int):
     else:
         raise HTTPException(status_code=404,detail='Not found')
 
-# get a book by title  
+# get a book by avergae rating
+# this is not working as expected 
+
 @router.get("/books/rated/")
 def get_books_sorted_by_ratings(db:db_dependancy):
-   
     books = (
         db.query(Book)
         .join(Rating, isouter=True)
@@ -79,14 +80,17 @@ def update_book(db:db_dependancy,book_id: int, updated_book: AddBook):
     book.isbn_number = updated_book.isbn_number
     book.price = updated_book.price
     db.commit()
-    return {"message": "Book has been updated successfully"}
+    return {"message": "Book has been updated successfully"} 
 
 # delete a book
-@router.delete("/books/{book_id}",status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/books/{book_id}")
 def delete_book(db:db_dependancy,book_id: int):
     book = db.query(Book).filter(Book.id == book_id).first()
+    rating=db.query(Rating).filter(Rating.book_id==book_id).all()
+   
     if book is None:
         raise HTTPException(status_code=404, detail="Book not found")
-    db.delete(book)
+    
+    db.delete(rating)
     db.commit()
     return {"message": "Book deleted successfully"}

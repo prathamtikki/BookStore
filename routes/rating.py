@@ -1,8 +1,7 @@
 from fastapi import Depends,APIRouter,HTTPException
 from typing import Annotated
-from sqlalchemy.orm import Session
 from models import Rating
-from database import engine, SessionLocal
+from database import SessionLocal
 from pydantic import BaseModel,Field
 from starlette import status
 
